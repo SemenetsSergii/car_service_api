@@ -1,10 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class DocumentCreate(BaseModel):
     """Schema for creating a new document."""
     mechanic_id: int
-    type: str
+    type: str = Field(..., example="passport")
     file_path: str
 
 
@@ -16,4 +17,11 @@ class DocumentRead(BaseModel):
     file_path: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+class DocumentUpdate(BaseModel):
+    """Schema for updating document details."""
+    mechanic_id: Optional[int] = None
+    type: Optional[str] = None
+    file_path: Optional[str] = None
