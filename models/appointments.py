@@ -1,13 +1,12 @@
 import enum
-
 from sqlalchemy import Column, Integer, ForeignKey, DateTime, Enum
 from db.engine import Base
 
 
 class AppointmentStatus(enum.Enum):
-    PENDING = "pending"
-    COMPLETED = "completed"
-    CANCELED = "canceled"
+    PENDING = "PENDING"
+    COMPLETED = "COMPLETED"
+    CANCELED = "CANCELED"
 
 
 class Appointment(Base):

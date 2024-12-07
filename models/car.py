@@ -10,5 +10,5 @@ class Car(Base):
     brand = Column(String(50), nullable=False)
     model = Column(String(50), nullable=False)
     year = Column(Integer, nullable=False)
-    plate_number = Column(String(), nullable=False)
+    plate_number = Column(String(10), unique=True, nullable=False)
     vin = Column(String(17), unique=True, nullable=False)
