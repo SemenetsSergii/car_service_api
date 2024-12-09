@@ -96,3 +96,25 @@ async def delete_mechanic(mechanic_id: int, db: AsyncSession = Depends(get_async
     await db.delete(mechanic)
     await db.commit()
     return {"message": f"Mechanic with ID {mechanic_id} has been deleted."}
+
+
+@router.get("/{mechanic_id}/appointments", response_model=list[AppointmentRead])
+async def get_mechanic_appointments(mechanic_id: int, db: AsyncSession = Depends(get_async_db)):
+    """Retrieve all appointments assigned to a specific mechanic."""
+    stmt = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
+    mechanic = (await db.execute(stmt)).scalar_one_or_none()
+    if not mechanic:
+        raise HTTPException(status_code=404, detail="Mechanic not found.")
+
+    appointments_stmt = select(Appointment).where(Appointment.mechanic_id == mechanic_id)
+    appointments = (await db.execute(appointments_stmt)).scalars().all()
+    if not appointments:
+        raise HTTPException(status_code=404, detail="No appointments found for this mechanic.")
+
+    for appointment in appointments:
+        car_stmt = select(Car).where(Car.car_id == appointment.car_id)
+        service_stmt = select(Service).where(Service.service_id == appointment.service_id)
+        appointment.car = (await db.execute(car_stmt)).scalar_one_or_none()
+        appointment.service = (await db.execute(service_stmt)).scalar_one_or_none()
+
+    return appointments
