@@ -9,6 +9,7 @@ from models.car import Car
 from models.services import Service
 from models.mechanics import Mechanic
 from schemas.appointments import AppointmentCreate, AppointmentRead, AppointmentUpdate
+from utils.email import send_email
 
 router = APIRouter()
 
@@ -82,6 +83,18 @@ async def create_appointment(appointment: AppointmentCreate, db: AsyncSession = 
     db.add(new_appointment)
     await db.commit()
     await db.refresh(new_appointment)
+
+    user_stmt = select(Users).where(Users.user_id == appointment.user_id)
+    user = (await db.execute(user_stmt)).scalar_one_or_none()
+    if user:
+        email_body = (
+            f"Dear {user.name},\n\n"
+            f"Your appointment has been confirmed:\n"
+            f"Date: {appointment_date.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Service: {appointment.service_id}\n"
+            f"Thank you for choosing our service!"
+        )
+        send_email(user.email, "Appointment Confirmation", email_body)
     return new_appointment
 
 
