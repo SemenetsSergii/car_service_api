@@ -4,10 +4,10 @@ from typing import Optional
 
 class ServiceCreate(BaseModel):
     """Schema for creating a new service."""
-    name: str = Field(..., min_length=2, max_length=100, example="Oil Change")
-    description: Optional[str] = Field(None, max_length=255, example="Engine oil change and filter replacement.")
-    price: float = Field(..., gt=0, example=50.0)
-    duration: int = Field(..., gt=0, example=60)
+    name: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Oil Change"})
+    description: Optional[str] = Field(None, max_length=255, json_schema_extra={"example": "Engine oil change and filter replacement."})
+    price: float = Field(..., gt=0, json_schema_extra={"example": 50.0})
+    duration: int = Field(..., gt=0, json_schema_extra={"example": 60})
 
 
 class ServiceRead(BaseModel):
@@ -18,8 +18,7 @@ class ServiceRead(BaseModel):
     price: float
     duration: int
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class ServiceUpdate(BaseModel):

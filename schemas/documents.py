@@ -5,8 +5,8 @@ from typing import Optional
 class DocumentCreate(BaseModel):
     """Schema for creating a new document."""
     mechanic_id: int
-    type: str = Field(..., example="passport")
-    file_path: str
+    type: str = Field(..., json_schema_extra={"example": "passport"})
+    file_path: str = Field(..., json_schema_extra={"example": "/path/to/file.pdf"})
 
 
 class DocumentRead(BaseModel):
@@ -16,12 +16,11 @@ class DocumentRead(BaseModel):
     type: str
     file_path: str
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class DocumentUpdate(BaseModel):
     """Schema for updating document details."""
-    mechanic_id: Optional[int] = None
-    type: Optional[str] = None
-    file_path: Optional[str] = None
+    mechanic_id: Optional[int] = Field(None, json_schema_extra={"example": 1})
+    type: Optional[str] = Field(None, json_schema_extra={"example": "passport"})
+    file_path: Optional[str] = Field(None, json_schema_extra={"example": "/path/to/new/file.pdf"})

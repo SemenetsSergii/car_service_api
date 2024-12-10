@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 from datetime import date, datetime
 from typing import Optional
@@ -11,27 +11,28 @@ class MechanicRole(str, Enum):
 
 class MechanicCreate(BaseModel):
     """Schema for creating a new mechanic."""
-    name: str = Field(..., min_length=2, max_length=100, example="Jane Doe")
-    birth_date: date = Field(..., example="1985-04-12")
-    login: str = Field(..., min_length=4, max_length=50, example="jdoe")
-    password: str = Field(..., min_length=8, example="SecureP@ss123")
-    role: MechanicRole = Field(default=MechanicRole.MECHANIC, example=MechanicRole.MECHANIC.value)
-    position: str = Field(..., min_length=2, max_length=100, example="Senior Technician")
+    name: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Jane Doe"})
+    birth_date: date = Field(..., json_schema_extra={"example": "1985-04-12"})
+    login: str = Field(..., min_length=4, max_length=50, json_schema_extra={"example": "jdoe"})
+    password: str = Field(..., min_length=8, json_schema_extra={"example": "SecureP@ss123"})
+    role: MechanicRole = Field(default=MechanicRole.MECHANIC, json_schema_extra={"example": MechanicRole.MECHANIC.value})
+    position: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Senior Technician"})
 
-    @validator("birth_date", pre=True)
-    def validate_birth_date(cls, value):
-        if isinstance(value, str):
+    @model_validator(mode="before")
+    @classmethod
+    def validate_birth_date(cls, values):
+        """Ensure the birth date is valid and in the past."""
+        birth_date = values.get("birth_date")
+        if isinstance(birth_date, str):
             try:
-                birth_date = datetime.strptime(value, "%Y-%m-%d").date()
-                if birth_date >= date.today():
-                    raise ValueError("Birth date must be in the past.")
-                return birth_date
+                birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
             except ValueError:
                 raise ValueError("Invalid birth date format. Use YYYY-MM-DD.")
-        elif isinstance(value, date):
-            if value >= date.today():
-                raise ValueError("Birth date must be in the past.")
-        return value
+
+        if birth_date >= date.today():
+            raise ValueError("Birth date must be in the past.")
+        values["birth_date"] = birth_date
+        return values
 
 
 class MechanicRead(BaseModel):
@@ -43,14 +44,15 @@ class MechanicRead(BaseModel):
     role: MechanicRole
     position: str
 
-    @validator("birth_date", pre=True)
-    def format_birth_date(cls, value):
-        if isinstance(value, date):
-            return value.strftime("%Y-%m-%d")
-        return value
+    @model_validator(mode="after")
+    @classmethod
+    def format_birth_date(cls, instance):
+        """Format birth date as a string."""
+        if isinstance(instance.birth_date, date):
+            instance.birth_date = instance.birth_date.strftime("%Y-%m-%d")
+        return instance
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class MechanicUpdate(BaseModel):
@@ -59,5 +61,21 @@ class MechanicUpdate(BaseModel):
     birth_date: Optional[date]
     login: Optional[str] = Field(None, min_length=4, max_length=50)
     password: Optional[str] = Field(None, min_length=8)
-    role: Optional[MechanicRole] = Field(None, example=MechanicRole.MECHANIC.value)
+    role: Optional[MechanicRole] = Field(None, json_schema_extra={"example": MechanicRole.MECHANIC.value})
     position: Optional[str] = Field(None, min_length=2, max_length=100)
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_birth_date(cls, values):
+        """Ensure the birth date is valid and in the past."""
+        birth_date = values.get("birth_date")
+        if isinstance(birth_date, str):
+            try:
+                birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
+            except ValueError:
+                raise ValueError("Invalid birth date format. Use YYYY-MM-DD.")
+
+        if birth_date and birth_date >= date.today():
+            raise ValueError("Birth date must be in the past.")
+        values["birth_date"] = birth_date
+        return values
