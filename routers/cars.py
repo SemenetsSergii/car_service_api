@@ -1,28 +1,47 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from db.engine import get_async_db
 from models.car import Car
-from schemas.car import CarCreate, CarRead, CarUpdate
+from schemas.car import (
+    CarCreate,
+    CarRead,
+    CarUpdate
+)
 
 router = APIRouter()
 
 
-async def validate_car_uniqueness(car_data: dict, db: AsyncSession, car_id: int = None):
+async def validate_car_uniqueness(
+        car_data: dict,
+        db: AsyncSession,
+        car_id: int = None
+):
     """Validate that the car's plate number and VIN are unique."""
     stmt = select(Car).where(Car.plate_number == car_data["plate_number"])
     if car_id:
         stmt = stmt.where(Car.car_id != car_id)
     result = await db.execute(stmt)
     if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Car with this plate number already exists.")
+        raise HTTPException(
+            status_code=400,
+            detail="Car with this plate number already exists."
+        )
 
     stmt = select(Car).where(Car.vin == car_data["vin"])
     if car_id:
         stmt = stmt.where(Car.car_id != car_id)
     result = await db.execute(stmt)
     if result.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Car with this VIN already exists.")
+        raise HTTPException(
+            status_code=400,
+            detail="Car with this VIN already exists."
+        )
 
 
 @router.post("/", response_model=CarRead, status_code=status.HTTP_201_CREATED)
@@ -59,7 +78,11 @@ async def get_car(car_id: int, db: AsyncSession = Depends(get_async_db)):
 
 
 @router.put("/{car_id}", response_model=CarRead)
-async def update_car(car_id: int, updated_car: CarUpdate, db: AsyncSession = Depends(get_async_db)):
+async def update_car(
+    car_id: int,
+        updated_car: CarUpdate,
+        db: AsyncSession = Depends(get_async_db)
+):
     """Update car details."""
     stmt = select(Car).where(Car.car_id == car_id)
     car = (await db.execute(stmt)).scalar_one_or_none()

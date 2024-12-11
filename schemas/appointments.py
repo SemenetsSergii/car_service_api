@@ -15,7 +15,10 @@ class AppointmentCreate(BaseModel):
     car_id: int
     service_id: int
     mechanic_id: int
-    appointment_date: str = Field(..., json_schema_extra={"example": "2024-12-10T10:00:00.000Z"})
+    appointment_date: str = Field(
+        ...,
+        json_schema_extra={"example": "2024-12-10T10:00:00.000Z"}
+    )
     status: str = Field(..., json_schema_extra={"example": "PENDING"})
 
     @model_validator(mode="before")
@@ -25,9 +28,12 @@ class AppointmentCreate(BaseModel):
         appointment_date = values.get("appointment_date")
         if appointment_date:
             try:
-                appointment_date_obj = datetime.fromisoformat(appointment_date.replace("Z", "+00:00"))
+                appointment_date_obj = datetime.fromisoformat(
+                    appointment_date.replace("Z", "+00:00")
+                )
             except ValueError:
-                raise ValueError("Invalid date format. Use ISO 8601 format, e.g., '2024-12-10T10:00:00.000Z'.")
+                raise ValueError("Invalid date format. Use ISO 8601 format, "
+                                 "e.g., '2024-12-10T10:00:00.000Z'.")
 
             if appointment_date_obj <= datetime.now(timezone.utc):
                 raise ValueError("Appointment date must be in the future.")

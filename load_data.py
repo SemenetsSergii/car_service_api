@@ -3,7 +3,7 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import text
-from db.engine import get_async_db, engine  # Added engine
+from db.engine import get_async_db, engine
 from models.users import Users
 from models.car import Car
 from models.services import Service

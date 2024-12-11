@@ -1,4 +1,10 @@
-from sqlalchemy import Column, Integer, String, Date, Enum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Date,
+    Enum
+)
 from db.engine import Base
 from enum import Enum as PyEnum
 
@@ -16,5 +22,9 @@ class Mechanic(Base):
     birth_date = Column(Date, nullable=False)
     login = Column(String(50), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    role = Column(Enum(MechanicRole), nullable=False, default=MechanicRole.MECHANIC)
+    role = Column(
+        Enum(MechanicRole),
+        nullable=False,
+        default=MechanicRole.MECHANIC
+    )
     position = Column(String(100), nullable=False)

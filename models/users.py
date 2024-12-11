@@ -1,4 +1,9 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    Enum
+)
 from db.engine import Base
 from enum import Enum as PyEnum
 
@@ -15,5 +20,9 @@ class Users(Base):
     name = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(100), unique=True, nullable=False, index=True)
     password = Column(String(255), nullable=False)
-    role = Column(Enum(UserRole, native_enum=False), default=UserRole.CUSTOMER, nullable=False)
-
+    role = Column(
+        Enum(UserRole,
+             native_enum=False),
+        default=UserRole.CUSTOMER,
+        nullable=False
+    )

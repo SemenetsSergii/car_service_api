@@ -1,4 +1,12 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form, status
+from fastapi import (
+    APIRouter,
+    UploadFile,
+    File,
+    HTTPException,
+    Depends,
+    Form,
+    status
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from db.engine import get_async_db
@@ -33,20 +41,24 @@ async def create_document_with_file(
     """Create a new document record in the database and upload a file."""
     await validate_mechanic(mechanic_id, db)
 
-    stmt = select(Document).where(Document.mechanic_id == mechanic_id, Document.type == type)
+    stmt = select(Document).where(
+        Document.mechanic_id == mechanic_id, Document.type == type
+    )
     existing_document = (await db.execute(stmt)).scalar_one_or_none()
 
     if existing_document:
         raise HTTPException(
             status_code=400,
-            detail=f"A document with type '{type}' already exists for this mechanic."
+            detail=f"A document with type '{type}' "
+                   f"already exists for this mechanic.",
         )
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     if os.path.exists(file_path):
         raise HTTPException(
             status_code=400,
-            detail="A file with the same name already exists. Please rename your file."
+            detail="A file with the same name already"
+                   " exists. Please rename your file.",
         )
 
     try:
@@ -54,9 +66,16 @@ async def create_document_with_file(
             while content := await file.read(1024):
                 await buffer.write(content)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to save file: {str(e)}"
+        )
 
-    new_document = Document(mechanic_id=mechanic_id, type=type, file_path=file_path)
+    new_document = Document(
+        mechanic_id=mechanic_id,
+        type=type,
+        file_path=file_path
+    )
     db.add(new_document)
     await db.commit()
     await db.refresh(new_document)
@@ -74,7 +93,10 @@ async def get_all_documents(db: AsyncSession = Depends(get_async_db)):
 
 
 @router.get("/{document_id}", response_model=DocumentRead)
-async def get_document(document_id: int, db: AsyncSession = Depends(get_async_db)):
+async def get_document(
+        document_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
     """Retrieve a document by ID."""
     stmt = select(Document).where(Document.document_id == document_id)
     document = (await db.execute(stmt)).scalar_one_or_none()
@@ -102,14 +124,19 @@ async def update_document(
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     if os.path.exists(file_path) and file_path != document.file_path:
-        raise HTTPException(status_code=400, detail="A file with the same name already exists.")
+        raise HTTPException(
+            status_code=400, detail="A file with the same name already exists."
+        )
 
     try:
         async with aiofiles.open(file_path, "wb") as buffer:
             while content := await file.read(1024):
                 await buffer.write(content)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to upload file: {str(e)}"
+        )
 
     if document.file_path != file_path:
         try:
@@ -127,8 +154,11 @@ async def update_document(
 
 
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_document(document_id: int, db: AsyncSession = Depends(get_async_db)):
-    """ Delete a document by ID. """
+async def delete_document(
+        document_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
+    """Delete a document by ID."""
     stmt = select(Document).where(Document.document_id == document_id)
     document = (await db.execute(stmt)).scalar_one_or_none()
 
@@ -148,4 +178,5 @@ async def delete_document(document_id: int, db: AsyncSession = Depends(get_async
     await db.delete(document)
     await db.commit()
 
-    return {"message": f"Document with ID {document_id} has been successfully deleted."}
+    return {"message": f"Document with ID {document_id}"
+                       f" has been successfully deleted."}

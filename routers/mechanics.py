@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from passlib.hash import argon2
@@ -6,7 +11,11 @@ from db.engine import get_async_db
 from models import Car, Service
 from models.mechanics import Mechanic
 from models.appointments import Appointment
-from schemas.mechanics import MechanicCreate, MechanicRead, MechanicUpdate
+from schemas.mechanics import (
+    MechanicCreate,
+    MechanicRead,
+    MechanicUpdate
+)
 from schemas.appointments import AppointmentRead
 
 router = APIRouter()
@@ -30,7 +39,10 @@ async def get_all_mechanics(db: AsyncSession = Depends(get_async_db)):
 
 
 @router.get("/{mechanic_id}", response_model=MechanicRead)
-async def get_mechanic(mechanic_id: int, db: AsyncSession = Depends(get_async_db)):
+async def get_mechanic(
+        mechanic_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
     """Retrieve a mechanic by ID."""
     stmt = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
     mechanic = (await db.execute(stmt)).scalar_one_or_none()
@@ -39,11 +51,19 @@ async def get_mechanic(mechanic_id: int, db: AsyncSession = Depends(get_async_db
     return mechanic
 
 
-@router.post("/", response_model=MechanicRead, status_code=status.HTTP_201_CREATED)
-async def create_mechanic(mechanic: MechanicCreate, db: AsyncSession = Depends(get_async_db)):
+@router.post(
+    "/",
+    response_model=MechanicRead,
+    status_code=status.HTTP_201_CREATED
+)
+async def create_mechanic(
+    mechanic: MechanicCreate, db: AsyncSession = Depends(get_async_db)
+):
     """Create a new mechanic."""
     if not await is_login_unique(mechanic.login, db):
-        raise HTTPException(status_code=400, detail="Mechanic with this login already exists.")
+        raise HTTPException(
+            status_code=400, detail="Mechanic with this login already exists."
+        )
 
     hashed_password = argon2.hash(mechanic.password)
     new_mechanic = Mechanic(
@@ -61,7 +81,11 @@ async def create_mechanic(mechanic: MechanicCreate, db: AsyncSession = Depends(g
 
 
 @router.put("/{mechanic_id}", response_model=MechanicRead)
-async def update_mechanic(mechanic_id: int, updated_mechanic: MechanicUpdate, db: AsyncSession = Depends(get_async_db)):
+async def update_mechanic(
+    mechanic_id: int,
+    updated_mechanic: MechanicUpdate,
+    db: AsyncSession = Depends(get_async_db),
+):
     """Update mechanic details."""
     stmt = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
     mechanic = (await db.execute(stmt)).scalar_one_or_none()
@@ -71,7 +95,10 @@ async def update_mechanic(mechanic_id: int, updated_mechanic: MechanicUpdate, db
 
     if updated_mechanic.login and updated_mechanic.login != mechanic.login:
         if not await is_login_unique(updated_mechanic.login, db):
-            raise HTTPException(status_code=400, detail="Mechanic with this login already exists.")
+            raise HTTPException(
+                status_code=400,
+                detail="Mechanic with this login already exists."
+            )
 
     if updated_mechanic.password:
         updated_mechanic.password = argon2.hash(updated_mechanic.password)
@@ -85,7 +112,10 @@ async def update_mechanic(mechanic_id: int, updated_mechanic: MechanicUpdate, db
 
 
 @router.delete("/{mechanic_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_mechanic(mechanic_id: int, db: AsyncSession = Depends(get_async_db)):
+async def delete_mechanic(
+        mechanic_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
     """Delete a mechanic."""
     stmt = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
     mechanic = (await db.execute(stmt)).scalar_one_or_none()
@@ -98,23 +128,36 @@ async def delete_mechanic(mechanic_id: int, db: AsyncSession = Depends(get_async
     return {"message": f"Mechanic with ID {mechanic_id} has been deleted."}
 
 
-@router.get("/{mechanic_id}/appointments", response_model=list[AppointmentRead])
-async def get_mechanic_appointments(mechanic_id: int, db: AsyncSession = Depends(get_async_db)):
+@router.get(
+    "/{mechanic_id}/appointments",
+    response_model=list[AppointmentRead]
+)
+async def get_mechanic_appointments(
+    mechanic_id: int, db: AsyncSession = Depends(get_async_db)
+):
     """Retrieve all appointments assigned to a specific mechanic."""
     stmt = select(Mechanic).where(Mechanic.mechanic_id == mechanic_id)
     mechanic = (await db.execute(stmt)).scalar_one_or_none()
     if not mechanic:
         raise HTTPException(status_code=404, detail="Mechanic not found.")
 
-    appointments_stmt = select(Appointment).where(Appointment.mechanic_id == mechanic_id)
+    appointments_stmt = select(Appointment).where(
+        Appointment.mechanic_id == mechanic_id
+    )
     appointments = (await db.execute(appointments_stmt)).scalars().all()
     if not appointments:
-        raise HTTPException(status_code=404, detail="No appointments found for this mechanic.")
+        raise HTTPException(
+            status_code=404, detail="No appointments found for this mechanic."
+        )
 
     for appointment in appointments:
         car_stmt = select(Car).where(Car.car_id == appointment.car_id)
-        service_stmt = select(Service).where(Service.service_id == appointment.service_id)
+        service_stmt = select(Service).where(
+            Service.service_id == appointment.service_id
+        )
         appointment.car = (await db.execute(car_stmt)).scalar_one_or_none()
-        appointment.service = (await db.execute(service_stmt)).scalar_one_or_none()
+        appointment.service = (
+            await db.execute(service_stmt)
+        ).scalar_one_or_none()
 
     return appointments

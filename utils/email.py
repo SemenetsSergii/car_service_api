@@ -33,4 +33,3 @@ def send_email(to_email: str, subject: str, body: str):
 
     except Exception as e:
         print(f"Error sending email: {e}")
-

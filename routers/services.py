@@ -3,7 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from db.engine import get_async_db
 from models.services import Service
-from schemas.services import ServiceCreate, ServiceRead, ServiceUpdate
+from schemas.services import (
+    ServiceCreate,
+    ServiceRead,
+    ServiceUpdate
+)
 
 router = APIRouter()
 
@@ -20,8 +24,14 @@ async def get_service_by_id(service_id: int, db: AsyncSession) -> Service:
     return service
 
 
-@router.post("/", response_model=ServiceRead, status_code=status.HTTP_201_CREATED)
-async def create_service(service: ServiceCreate, db: AsyncSession = Depends(get_async_db)):
+@router.post(
+    "/",
+    response_model=ServiceRead,
+    status_code=status.HTTP_201_CREATED
+)
+async def create_service(
+    service: ServiceCreate, db: AsyncSession = Depends(get_async_db)
+):
     """
     Create a new service. Checks for duplicate service names.
     """
@@ -30,7 +40,7 @@ async def create_service(service: ServiceCreate, db: AsyncSession = Depends(get_
     if existing_service:
         raise HTTPException(
             status_code=400,
-            detail=f"A service with the name '{service.name}' already exists."
+            detail=f"A service with the name '{service.name}' already exists.",
         )
 
     new_service = Service(**service.dict())
@@ -53,7 +63,10 @@ async def get_all_services(db: AsyncSession = Depends(get_async_db)):
 
 
 @router.get("/{service_id}", response_model=ServiceRead)
-async def get_service(service_id: int, db: AsyncSession = Depends(get_async_db)):
+async def get_service(
+        service_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
     """
     Retrieve a service by ID.
     """
@@ -61,7 +74,11 @@ async def get_service(service_id: int, db: AsyncSession = Depends(get_async_db))
 
 
 @router.put("/{service_id}", response_model=ServiceRead)
-async def update_service(service_id: int, updated_service: ServiceUpdate, db: AsyncSession = Depends(get_async_db)):
+async def update_service(
+    service_id: int,
+    updated_service: ServiceUpdate,
+    db: AsyncSession = Depends(get_async_db),
+):
     """
     Update service details.
     """
@@ -73,7 +90,8 @@ async def update_service(service_id: int, updated_service: ServiceUpdate, db: As
         if existing_service:
             raise HTTPException(
                 status_code=400,
-                detail=f"A service with the name '{updated_service.name}' already exists."
+                detail=f"A service with the name "
+                       f"'{updated_service.name}' already exists.",
             )
 
     for key, value in updated_service.dict(exclude_unset=True).items():
@@ -85,7 +103,10 @@ async def update_service(service_id: int, updated_service: ServiceUpdate, db: As
 
 
 @router.delete("/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_service(service_id: int, db: AsyncSession = Depends(get_async_db)):
+async def delete_service(
+        service_id: int,
+        db: AsyncSession = Depends(get_async_db)
+):
     """
     Delete a service.
     """

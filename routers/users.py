@@ -1,13 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+import jwt
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    status
+)
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from passlib.hash import argon2
-import jwt
-from datetime import datetime, timedelta, timezone
+from datetime import (
+    datetime,
+    timedelta,
+    timezone
+)
+
 from db.engine import get_async_db
-from models.users import Users, UserRole
-from schemas.users import UserCreate, UserRead, UserUpdate
+from models.users import Users
+from schemas.users import (
+    UserCreate,
+    UserRead,
+    UserUpdate
+)
 
 
 SECRET_KEY = "your_secret_key"
@@ -47,7 +62,10 @@ async def validate_user_email_uniqueness(email: str, db: AsyncSession):
         raise HTTPException(status_code=400, detail="Email already exists.")
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_async_db)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+        db: AsyncSession = Depends(get_async_db)
+):
     """
     Get the currently authenticated user from the JWT token.
     """
@@ -55,16 +73,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("user_id")
         if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid authentication token.")
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authentication token."
+            )
         return await get_user_by_id(user_id, db)
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired.")
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid authentication token.")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid authentication token."
+        )
 
 
 @router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
-async def create_user(user: UserCreate, db: AsyncSession = Depends(get_async_db)):
+async def create_user(
+        user: UserCreate,
+        db: AsyncSession = Depends(get_async_db)
+):
     """
     Create a new user in the database.
     """
@@ -84,19 +111,28 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_async_db)
 
 
 @router.post("/auth/login")
-async def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_async_db)):
+async def login_user(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_async_db),
+):
     """
     Authenticate a user and generate a JWT token.
     """
     user = await get_user_by_email(form_data.username, db)
     if not user or not argon2.verify(form_data.password, user.password):
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password."
+        )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = jwt.encode(
-        {"user_id": user.user_id, "exp": datetime.now(timezone.utc) + access_token_expires},
+        {
+            "user_id": user.user_id,
+            "exp": datetime.now(timezone.utc) + access_token_expires,
+        },
         SECRET_KEY,
-        algorithm=ALGORITHM
+        algorithm=ALGORITHM,
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -128,7 +164,11 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_async_db)):
 
 
 @router.put("/{user_id}", response_model=UserRead)
-async def update_user(user_id: int, updated_user: UserUpdate, db: AsyncSession = Depends(get_async_db)):
+async def update_user(
+    user_id: int,
+        updated_user: UserUpdate,
+        db: AsyncSession = Depends(get_async_db)
+):
     """
     Update a user's details in the database.
     """

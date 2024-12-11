@@ -12,7 +12,11 @@ SQLALCHEMY_TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 @pytest.fixture(scope="session")
 async def async_engine():
     """Create an async engine for the test database."""
-    engine = create_async_engine(SQLALCHEMY_TEST_DATABASE_URL, future=True, echo=False)
+    engine = create_async_engine(
+        SQLALCHEMY_TEST_DATABASE_URL,
+        future=True,
+        echo=False
+    )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield engine
@@ -22,7 +26,11 @@ async def async_engine():
 @pytest.fixture(scope="function")
 async def async_session(async_engine):
     """Provide an asynchronous database session for tests."""
-    Session = sessionmaker(bind=async_engine, class_=AsyncSession, expire_on_commit=False)
+    Session = sessionmaker(
+        bind=async_engine,
+        class_=AsyncSession,
+        expire_on_commit=False
+    )
     async with Session() as session:
         yield session
 

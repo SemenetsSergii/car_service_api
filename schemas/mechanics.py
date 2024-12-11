@@ -11,12 +11,37 @@ class MechanicRole(str, Enum):
 
 class MechanicCreate(BaseModel):
     """Schema for creating a new mechanic."""
-    name: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Jane Doe"})
-    birth_date: date = Field(..., json_schema_extra={"example": "1985-04-12"})
-    login: str = Field(..., min_length=4, max_length=50, json_schema_extra={"example": "jdoe"})
-    password: str = Field(..., min_length=8, json_schema_extra={"example": "SecureP@ss123"})
-    role: MechanicRole = Field(default=MechanicRole.MECHANIC, json_schema_extra={"example": MechanicRole.MECHANIC.value})
-    position: str = Field(..., min_length=2, max_length=100, json_schema_extra={"example": "Senior Technician"})
+    name: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        json_schema_extra={"example": "Jane Doe"}
+    )
+    birth_date: date = Field(
+        ...,
+        json_schema_extra={"example": "1985-04-12"}
+    )
+    login: str = Field(
+        ...,
+        min_length=4,
+        max_length=50,
+        json_schema_extra={"example": "jdoe"}
+    )
+    password: str = Field(
+        ...,
+        min_length=8,
+        json_schema_extra={"example": "SecureP@ss123"}
+    )
+    role: MechanicRole = Field(
+        default=MechanicRole.MECHANIC,
+        json_schema_extra={"example": MechanicRole.MECHANIC.value}
+    )
+    position: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        json_schema_extra={"example": "Senior Technician"}
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -61,7 +86,10 @@ class MechanicUpdate(BaseModel):
     birth_date: Optional[date]
     login: Optional[str] = Field(None, min_length=4, max_length=50)
     password: Optional[str] = Field(None, min_length=8)
-    role: Optional[MechanicRole] = Field(None, json_schema_extra={"example": MechanicRole.MECHANIC.value})
+    role: Optional[MechanicRole] = Field(
+        None,
+        json_schema_extra={"example": MechanicRole.MECHANIC.value}
+    )
     position: Optional[str] = Field(None, min_length=2, max_length=100)
 
     @model_validator(mode="before")
