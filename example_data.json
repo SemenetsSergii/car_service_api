@@ -1,0 +1,64 @@
+{
+  "users": [
+    {"user_id": 1, "name": "IvanPetrenko", "email": "ivan.petrenko@example.com", "password": "hashed_password_1", "role": "CUSTOMER"},
+    {"user_id": 2, "name": "OlgaShevchenko", "email": "olga.shevchenko@example.com", "password": "hashed_password_2", "role": "CUSTOMER"},
+    {"user_id": 3, "name": "MykolaKoval", "email": "mykola.koval@example.com", "password": "hashed_password_3", "role": "CUSTOMER"},
+    {"user_id": 4, "name": "SvitlanaHryshko", "email": "svitlana.hryshko@example.com", "password": "hashed_password_4", "role": "CUSTOMER"},
+    {"user_id": 5, "name": "AndriyBondarenko", "email": "andriy.bondarenko@example.com", "password": "hashed_password_5", "role": "ADMIN"}
+  ],
+  "cars": [
+    {"car_id": 1, "user_id": 1, "brand": "Toyota", "model": "Corolla", "year": 2015, "plate_number": "AA1234BB", "vin": "JTDBE30KX03012345"},
+    {"car_id": 2, "user_id": 1, "brand": "Honda", "model": "Civic", "year": 2020, "plate_number": "AB5678CD", "vin": "2HGFC2F59KH501234"},
+    {"car_id": 3, "user_id": 2, "brand": "Mazda", "model": "3", "year": 2018, "plate_number": "AC4321DC", "vin": "JM1BN1W30J1180123"},
+    {"car_id": 4, "user_id": 2, "brand": "Ford", "model": "Focus", "year": 2017, "plate_number": "AE7654FE", "vin": "1FAHP3F26CL456789"},
+    {"car_id": 5, "user_id": 3, "brand": "Chevrolet", "model": "Cruze", "year": 2019, "plate_number": "AH8765GH", "vin": "1G1BE5SM0H7151234"},
+    {"car_id": 6, "user_id": 3, "brand": "Volkswagen", "model": "Golf", "year": 2016, "plate_number": "AI9087IJ", "vin": "3VW2B7AJ5HM512345"},
+    {"car_id": 7, "user_id": 4, "brand": "Nissan", "model": "Qashqai", "year": 2021, "plate_number": "AM1234KL", "vin": "JN1BJ1CP7MW012345"},
+    {"car_id": 8, "user_id": 4, "brand": "Hyundai", "model": "Tucson", "year": 2019, "plate_number": "AP5678MN", "vin": "KM8J23A41KU512345"},
+    {"car_id": 9, "user_id": 5, "brand": "BMW", "model": "X5", "year": 2020, "plate_number": "AT4321PR", "vin": "5UXCR6C54L9B01234"},
+    {"car_id": 10, "user_id": 5, "brand": "Mercedes", "model": "GLE", "year": 2021, "plate_number": "AX7654ST", "vin": "4JGDA5JB9HB012345"},
+    {"car_id": 11, "user_id": 1, "brand": "Subaru", "model": "Forester", "year": 2018, "plate_number": "AY8765UV", "vin": "JF2SJAGC7JH512345"},
+    {"car_id": 12, "user_id": 2, "brand": "Kia", "model": "Sportage", "year": 2020, "plate_number": "BA9087WX", "vin": "KNDPBCAC0L7531234"},
+    {"car_id": 13, "user_id": 3, "brand": "Audi", "model": "Q7", "year": 2019, "plate_number": "BB1234YZ", "vin": "WA1LAAF78KD012345"},
+    {"car_id": 14, "user_id": 4, "brand": "Skoda", "model": "Octavia", "year": 2017, "plate_number": "BC5678ZA", "vin": "TMBAG7NE5H5123456"},
+    {"car_id": 15, "user_id": 5, "brand": "Lexus", "model": "RX", "year": 2021, "plate_number": "BD4321AB", "vin": "JTJYARBZ8L2512345"}
+  ],
+  "services": [
+    {"service_id": 1, "name": "Oil Change", "description": "Engine oil and filter replacement", "price": 49.99, "duration": 30},
+    {"service_id": 2, "name": "Tire Rotation", "description": "Rotating tires for even wear", "price": 29.99, "duration": 20},
+    {"service_id": 3, "name": "Brake Inspection", "description": "Checking brake pads and discs", "price": 39.99, "duration": 25},
+    {"service_id": 4, "name": "Battery Replacement", "description": "Replacing car battery", "price": 99.99, "duration": 40},
+    {"service_id": 5, "name": "Wheel Alignment", "description": "Aligning wheels for proper tracking", "price": 59.99, "duration": 50},
+    {"service_id": 6, "name": "AC Recharge", "description": "Refilling air conditioning gas", "price": 89.99, "duration": 45},
+    {"service_id": 7, "name": "Engine Tune-up", "description": "Improving engine performance", "price": 149.99, "duration": 90},
+    {"service_id": 8, "name": "Transmission Service", "description": "Changing transmission oil", "price": 199.99, "duration": 120},
+    {"service_id": 9, "name": "Suspension Check", "description": "Inspecting suspension components", "price": 79.99, "duration": 60},
+    {"service_id": 10, "name": "Coolant Flush", "description": "Flushing and replacing coolant", "price": 49.99, "duration": 40}
+  ],
+  "mechanics": [
+    {"mechanic_id": 1, "name": "Taras Myronenko", "birth_date": "1985-07-15", "login": "taras_myr", "password": "hashed_password_6", "role": "MECHANIC", "position": "Senior Mechanic"},
+    {"mechanic_id": 2, "name": "Oksana Kovalchuk", "birth_date": "1990-03-10", "login": "oksana_kov", "password": "hashed_password_7", "role": "MECHANIC", "position": "Diagnostic Specialist"},
+    {"mechanic_id": 3, "name": "Pavlo Shevchenko", "birth_date": "1987-08-22", "login": "pavlo_shev", "password": "hashed_password_8", "role": "MECHANIC", "position": "Transmission Specialist"},
+    {"mechanic_id": 4, "name": "Iryna Bondar", "birth_date": "1992-05-18", "login": "iryna_bon", "password": "hashed_password_9", "role": "MECHANIC", "position": "Brake Specialist"},
+    {"mechanic_id": 5, "name": "Yaroslav Petryk", "birth_date": "1983-12-11", "login": "yaroslav_pet", "password": "hashed_password_10", "role": "MECHANIC", "position": "Engine Specialist"},
+    {"mechanic_id": 6, "name": "Anna Lysenko", "birth_date": "1989-07-07", "login": "anna_lys", "password": "hashed_password_11", "role": "MECHANIC", "position": "Electrical Specialist"},
+    {"mechanic_id": 7, "name": "Roman Hrytsenko", "birth_date": "1986-01-03", "login": "roman_hry", "password": "hashed_password_12", "role": "MECHANIC", "position": "Tire Specialist"}
+  ],
+  "appointments": [
+    {"appointment_id": 1, "user_id": 1, "car_id": 1, "service_id": 1, "mechanic_id": 1, "appointment_date": "2024-12-15T10:30:00", "status": "PENDING"},
+    {"appointment_id": 2, "user_id": 1, "car_id": 2, "service_id": 2, "mechanic_id": 2, "appointment_date": "2024-12-16T14:00:00", "status": "COMPLETED"},
+    {"appointment_id": 3, "user_id": 2, "car_id": 3, "service_id": 3, "mechanic_id": 3, "appointment_date": "2024-12-17T09:00:00", "status": "CANCELED"},
+    {"appointment_id": 4, "user_id": 2, "car_id": 4, "service_id": 4, "mechanic_id": 4, "appointment_date": "2024-12-18T11:00:00", "status": "PENDING"},
+    {"appointment_id": 5, "user_id": 3, "car_id": 5, "service_id": 5, "mechanic_id": 5, "appointment_date": "2024-12-19T13:00:00", "status": "COMPLETED"},
+    {"appointment_id": 6, "user_id": 3, "car_id": 6, "service_id": 6, "mechanic_id": 6, "appointment_date": "2024-12-20T15:00:00", "status": "PENDING"},
+    {"appointment_id": 7, "user_id": 4, "car_id": 7, "service_id": 7, "mechanic_id": 7, "appointment_date": "2024-12-21T10:00:00", "status": "COMPLETED"},
+    {"appointment_id": 8, "user_id": 4, "car_id": 8, "service_id": 8, "mechanic_id": 1, "appointment_date": "2024-12-22T14:00:00", "status": "PENDING"},
+    {"appointment_id": 9, "user_id": 5, "car_id": 9, "service_id": 9, "mechanic_id": 2, "appointment_date": "2024-12-23T12:00:00", "status": "CANCELED"},
+    {"appointment_id": 10, "user_id": 5, "car_id": 10, "service_id": 10, "mechanic_id": 3, "appointment_date": "2024-12-24T16:00:00", "status": "PENDING"},
+    {"appointment_id": 11, "user_id": 1, "car_id": 11, "service_id": 1, "mechanic_id": 4, "appointment_date": "2024-12-25T09:30:00", "status": "COMPLETED"},
+    {"appointment_id": 12, "user_id": 2, "car_id": 12, "service_id": 2, "mechanic_id": 5, "appointment_date": "2024-12-26T11:30:00", "status": "PENDING"},
+    {"appointment_id": 13, "user_id": 3, "car_id": 13, "service_id": 3, "mechanic_id": 6, "appointment_date": "2024-12-27T14:00:00", "status": "CANCELED"},
+    {"appointment_id": 14, "user_id": 4, "car_id": 14, "service_id": 4, "mechanic_id": 7, "appointment_date": "2024-12-28T15:30:00", "status": "PENDING"},
+    {"appointment_id": 15, "user_id": 5, "car_id": 15, "service_id": 5, "mechanic_id": 1, "appointment_date": "2024-12-29T10:00:00", "status": "COMPLETED"}
+  ]
+}
