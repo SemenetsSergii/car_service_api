@@ -9,35 +9,47 @@ class MechanicRole(str, Enum):
     MECHANIC = "MECHANIC"
 
 
-class MechanicCreate(BaseModel):
-    """Schema for creating a new mechanic."""
-    name: str = Field(
-        ...,
+def validate_birth_date(value: date) -> date:
+    """Validates that the birth date is in the past and properly formatted."""
+    if isinstance(value, str):
+        try:
+            value = datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            raise ValueError("Invalid birth date format. Use YYYY-MM-DD.")
+    if value >= date.today():
+        raise ValueError("Birth date must be in the past.")
+    return value
+
+
+class MechanicBase(BaseModel):
+    """Base class for mechanic schemas. Contains shared fields and validation logic."""
+    name: Optional[str] = Field(
+        None,
         min_length=2,
         max_length=100,
         json_schema_extra={"example": "Jane Doe"}
     )
-    birth_date: date = Field(
-        ...,
+    birth_date: Optional[date] = Field(
+        None,
         json_schema_extra={"example": "1985-04-12"}
     )
-    login: str = Field(
-        ...,
+    login: Optional[str] = Field(
+        None,
         min_length=4,
         max_length=50,
         json_schema_extra={"example": "jdoe"}
     )
-    password: str = Field(
-        ...,
+    password: Optional[str] = Field(
+        None,
         min_length=8,
         json_schema_extra={"example": "SecureP@ss123"}
     )
-    role: MechanicRole = Field(
+    role: Optional[MechanicRole] = Field(
         default=MechanicRole.MECHANIC,
         json_schema_extra={"example": MechanicRole.MECHANIC.value}
     )
-    position: str = Field(
-        ...,
+    position: Optional[str] = Field(
+        None,
         min_length=2,
         max_length=100,
         json_schema_extra={"example": "Senior Technician"}
@@ -45,26 +57,27 @@ class MechanicCreate(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def validate_birth_date(cls, values):
-        """Ensure the birth date is valid and in the past."""
-        birth_date = values.get("birth_date")
-        if isinstance(birth_date, str):
-            try:
-                birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
-            except ValueError:
-                raise ValueError("Invalid birth date format. Use YYYY-MM-DD.")
-
-        if birth_date >= date.today():
-            raise ValueError("Birth date must be in the past.")
-        values["birth_date"] = birth_date
+    def validate_birth_date_field(cls, values):
+        """Ensures that the `birth_date` field is valid and in the past."""
+        if "birth_date" in values and values["birth_date"] is not None:
+            values["birth_date"] = validate_birth_date(values["birth_date"])
         return values
+
+
+class MechanicCreate(MechanicBase):
+    """Schema for creating a new mechanic."""
+    name: str
+    birth_date: date
+    login: str
+    password: str
+    position: str
 
 
 class MechanicRead(BaseModel):
     """Schema for reading mechanic details."""
     mechanic_id: int
     name: str
-    birth_date: str
+    birth_date: date
     login: str
     role: MechanicRole
     position: str
@@ -72,7 +85,7 @@ class MechanicRead(BaseModel):
     @model_validator(mode="after")
     @classmethod
     def format_birth_date(cls, instance):
-        """Format birth date as a string."""
+        """Formats the `birth_date` field as a string in the format YYYY-MM-DD."""
         if isinstance(instance.birth_date, date):
             instance.birth_date = instance.birth_date.strftime("%Y-%m-%d")
         return instance
@@ -80,30 +93,6 @@ class MechanicRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class MechanicUpdate(BaseModel):
+class MechanicUpdate(MechanicBase):
     """Schema for updating mechanic details."""
-    name: Optional[str] = Field(None, min_length=2, max_length=100)
-    birth_date: Optional[date]
-    login: Optional[str] = Field(None, min_length=4, max_length=50)
-    password: Optional[str] = Field(None, min_length=8)
-    role: Optional[MechanicRole] = Field(
-        None,
-        json_schema_extra={"example": MechanicRole.MECHANIC.value}
-    )
-    position: Optional[str] = Field(None, min_length=2, max_length=100)
-
-    @model_validator(mode="before")
-    @classmethod
-    def validate_birth_date(cls, values):
-        """Ensure the birth date is valid and in the past."""
-        birth_date = values.get("birth_date")
-        if isinstance(birth_date, str):
-            try:
-                birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date()
-            except ValueError:
-                raise ValueError("Invalid birth date format. Use YYYY-MM-DD.")
-
-        if birth_date and birth_date >= date.today():
-            raise ValueError("Birth date must be in the past.")
-        values["birth_date"] = birth_date
-        return values
+    pass

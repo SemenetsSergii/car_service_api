@@ -1,5 +1,15 @@
-from pydantic import BaseModel, Field, model_validator
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import Optional, Annotated
+
+VinType = Annotated[
+    str,
+    Field(
+        min_length=17,
+        max_length=17,
+        description="VIN must be exactly 17 characters long.",
+        examples=["1HGCM82633A123456"]
+    )
+]
 
 
 class CarCreate(BaseModel):
@@ -29,20 +39,9 @@ class CarCreate(BaseModel):
         max_length=10,
         json_schema_extra={"example": "AA7777AA"}
     )
-    vin: str = Field(
-        ...,
-        min_length=17,
-        max_length=17,
-        json_schema_extra={"example": "1HGCM82633A123456"}
+    vin: VinType = Field(
+        ..., json_schema_extra={"example": "1HGCM82633A123456"}
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def validate_vin(cls, values):
-        vin = values.get("vin")
-        if vin and len(vin) != 17:
-            raise ValueError("VIN must be exactly 17 characters long.")
-        return values
 
 
 class CarRead(BaseModel):
@@ -53,7 +52,7 @@ class CarRead(BaseModel):
     model: str
     year: int
     plate_number: str
-    vin: str
+    vin: VinType
 
     model_config = {"from_attributes": True}
 
@@ -64,12 +63,4 @@ class CarUpdate(BaseModel):
     model: Optional[str] = Field(None, min_length=1, max_length=50)
     year: Optional[int] = Field(None, ge=1886, le=2100)
     plate_number: Optional[str] = Field(None, min_length=1, max_length=10)
-    vin: Optional[str] = Field(None, min_length=17, max_length=17)
-
-    @model_validator(mode="before")
-    @classmethod
-    def validate_vin(cls, values):
-        vin = values.get("vin")
-        if vin and len(vin) != 17:
-            raise ValueError("VIN must be exactly 17 characters long.")
-        return values
+    vin: Optional[VinType] = None
